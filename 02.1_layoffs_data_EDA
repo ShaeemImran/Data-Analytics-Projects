@@ -1,0 +1,95 @@
+-- EDA ON WORLD LAYOFFS DATASET.
+
+USE world_layoffs;
+-- 1. DATA PREVIEW & INITIAL PROFILING
+-- Standard check to understand the scope of the data
+SELECT * FROM layoffs_staging2;
+
+-- Identifying the scale of layoffs (Max single event and percentage range)
+-- Aggregation
+SELECT 
+MAX(total_laid_off) AS max_single_layoff, 
+MAX(percentage_laid_off) AS max_pct,
+MIN(percentage_laid_off) AS min_pct
+FROM layoffs_staging2;
+
+-- 2. INVESTIGATING "TOTAL" LAYOFFS (100% Impact)
+-- Companies that laid off 100% of their staff (likely went out of business)
+SELECT *
+FROM layoffs_staging2
+WHERE percentage_laid_off = 1 -- 1=100%
+ORDER BY funds_raised_millions DESC;
+
+-- 3. CATEGORICAL AGGREGATIONS (Rankings) and groupings
+-- Analyzing layoffs by Company, Location, Country, and Industry
+-- Top 10 Companies with most total layoffs 
+SELECT company, SUM(total_laid_off) AS total_layoffs
+FROM layoffs_staging2
+GROUP BY company
+ORDER BY total_layoffs DESC -- order by 2 (by 2nd column)
+LIMIT 10;
+
+-- Impact by Industry (Which sectors were hit hardest?)
+SELECT industry, SUM(total_laid_off) as total_layoffs
+FROM layoffs_staging2
+GROUP BY industry
+ORDER BY 2 DESC;
+
+-- Impact by Country (Where were the most jobs lost?)
+SELECT country, SUM(total_laid_off) as total_layoffs
+FROM layoffs_staging2
+GROUP BY country
+ORDER BY 2 DESC;
+-- Impact by Company Stage (e.g., Series A, Post-IPO)
+SELECT stage, SUM(total_laid_off) as total_layoffs
+FROM layoffs_staging2
+GROUP BY stage
+ORDER BY 2 DESC;
+
+-- 4. TIME-SERIES ANALYSIS
+-- Tracking how layoffs evolved over months and years
+-- Anual totals:
+SELECT YEAR(`date`) AS Years, SUM(total_laid_off) AS total_layoffs
+FROM layoffs_staging2
+WHERE date IS NOT NULL
+GROUP BY YEAR(`date`)
+ORDER BY Years;
+
+-- Monthly Rolling Total 
+-- a: finding the monthly layoffs
+SELECT SUBSTRING(date, 6,2) AS month_wise_date, SUM(total_laid_off) as total_layoffs
+FROM layoffs_staging2
+WHERE SUBSTRING(date, 6,2) IS NOT NULL
+GROUP BY month_wise_date
+ORDER BY month_wise_date;
+
+-- for rolling total it's double sum= SUM(SUM(total_offs)), rolling tot=windows
+-- monthly-- do not use partition by
+WITH monthly_rolling_total AS(
+	SELECT SUBSTRING(date, 6,2) AS month_wise_date, SUM(total_laid_off) as total_layoffs
+	FROM layoffs_staging2
+	WHERE SUBSTRING(date, 6,2) IS NOT NULL
+	GROUP BY month_wise_date
+	ORDER BY month_wise_date
+)
+SELECT month_wise_date, total_layoffs, SUM(total_layoffs) 
+OVER (ORDER BY month_wise_date) AS rolling_total
+FROM monthly_rolling_total;
+
+-- 5. ADVANCED RANKING (Window Functions)
+-- Identifying the Top 3 Companies per year with the most layoffs
+WITH company_year AS(
+SELECT company, YEAR(`date`) AS years, SUM(total_laid_off) as total_offs
+FROM layoffs_staging2
+GROUP BY company, YEAR(`date`)
+ORDER BY total_offs desc
+),
+company_year_rank AS (
+SELECT company, years, total_offs, -- sum(total_laid_off) already done above
+DENSE_RANK() OVER (PARTITION BY years ORDER BY total_offs DESC) AS ranking
+FROM company_year
+WHERE years is not null
+)
+SELECT * FROM company_year_rank
+WHERE ranking <=3
+ORDER BY years ASC, total_offs DESC;
