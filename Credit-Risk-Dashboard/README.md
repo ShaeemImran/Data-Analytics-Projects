@@ -1,10 +1,6 @@
 # Executive Banking Credit Risk & Risk Stratification Analytics Dashboard
 ---
 
-
-## Business Problem Solved: Evaluated portfolio default risk across $77.7M in loan exposure by identifying high-risk borrower concentrations, quantifying a 20.71% delinquency rate, 
-and monitoring Debt-to-Income (DTI) health across economic sectors to prevent loan losses.
-
 ## Key Steps & Technical Workflow
 
 1. **Data Cleaning & Standardization (Excel / Power Query):**
