@@ -17,4 +17,4 @@
    * **Risk Stratification Column Chart:** Risk tier visualization showing distribution across High, Medium, Low, and Unscorable tiers.
    * **DTI by Industry Bar Chart:** Average Debt-to-Income ratios across key sectors (Healthcare, Tech, Retail, Hospitality, Energy).
    * **Monthly Origination Trend Lines:** Multi-line chart tracking portfolio growth across Auto Loans, Credit Cards, Mortgages, and Personal Loans (2024–2025).
-   * 
+
