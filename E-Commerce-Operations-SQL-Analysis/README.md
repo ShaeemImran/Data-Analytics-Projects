@@ -11,7 +11,7 @@ This project delivers an end-to-end SQL data analytics pipeline built on raw e-c
 6. Compare payment methods and identify refund bottlenecks
 ---
 
-## 🛠️ Data Pipeline & Cleaning Strategy (`01_data_cleaning_and_staging.sql`)
+##  Data Pipeline & Cleaning Strategy (`01_data_cleaning_and_staging.sql`)
 
 1. Created a staging table to protect the raw dataset
 2. Removed duplicate records using ROW_NUMBER()
@@ -24,7 +24,7 @@ This project delivers an end-to-end SQL data analytics pipeline built on raw e-c
 9. Corrected negative financial values and refund-related anomalies using ABS()
 ---
 
-## 📊 Core Analytical Frameworks & Findings (`02_exploratory_data_analysis_and_frameworks.sql`)
+##  Core Analytical Frameworks & Findings (`02_exploratory_data_analysis_and_frameworks.sql`)
 
 **1. Executive Overview & Critical Red Flag**
 Gross Revenue: ~$3.69M across ~2,000 orders.
